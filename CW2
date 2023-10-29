@@ -1,0 +1,759 @@
+{
+ "nbformat": 4,
+ "nbformat_minor": 0,
+ "metadata": {
+  "colab": {
+   "provenance": [],
+   "authorship_tag": "ABX9TyPfvCA8avt9JyH+RrMyhpFb"
+  },
+  "kernelspec": {
+   "name": "python3",
+   "language": "python",
+   "display_name": "Python 3 (ipykernel)"
+  },
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## iterator"
+   ],
+   "metadata": {
+    "id": "YBf77-O2VMaK"
+   }
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "MobBtdWEVEu1"
+   },
+   "outputs": [],
+   "source": [
+    "'''\n",
+    "Zadanie 1\n",
+    "Zaimplementuj własny iterator o nazwie tetranacci, zwracający kolejne liczby ciągu Tetranacciego.\n",
+    "Funkcja __init__ powinna posiadać parametr o nazwie steps określający liczbę wyrazów ciągu,\n",
+    "po których funkcja __next__ rzuca wyjątek StopIteration.\n",
+    "Napisz program, w którym wykorzystasz swój iterator do wypisania na ekranie kolejnych wyrazów tego ciągu.\n",
+    "Niech liczbę wyrazów do wypisania podaje użytkownik.\n",
+    "\n",
+    "'''"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0\n",
+      "0\n",
+      "0\n",
+      "1\n",
+      "2\n",
+      "4\n",
+      "8\n",
+      "15\n",
+      "29\n",
+      "56\n"
+     ]
+    }
+   ],
+   "source": [
+    "class Tetranacci:\n",
+    "    def __init__(self, steps):\n",
+    "        self.steps = steps\n",
+    "        self.current_step = 0\n",
+    "        self.a, self.b, self.c, self.d = 0, 0, 0, 1\n",
+    "\n",
+    "    def __iter__(self):\n",
+    "        return self\n",
+    "\n",
+    "    def __next__(self):\n",
+    "        if self.current_step >= self.steps:\n",
+    "            raise StopIteration\n",
+    "        \n",
+    "        if self.current_step < 3:\n",
+    "            self.current_step += 1\n",
+    "            return [0, 0, 0, 1][self.current_step - 1]\n",
+    "        \n",
+    "        else :\n",
+    "            next_value = self.a + self.b + self.c + self.d\n",
+    "            self.a, self.b, self.c, self.d = self.b, self.c, self.d, next_value\n",
+    "            self.current_step += 1\n",
+    "            return next_value\n",
+    "        \n",
+    "for number in Tetranacci(10):  print(number)\n",
+    "        "
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-15T11:30:07.775505Z",
+     "start_time": "2023-10-15T11:30:07.764756Z"
+    }
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## generator"
+   ],
+   "metadata": {
+    "id": "HgA0kNjTVXwG"
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 2\n",
+    "Zaimplementuj własny generator o nazwie accumulate,\n",
+    "zwracający kolejne sumy elementów z podanego obiektu iterowalnego.\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "hl3BhofyVdoH"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1\n",
+      "3\n",
+      "6\n",
+      "10\n",
+      "15\n"
+     ]
+    }
+   ],
+   "source": [
+    "def accumulate(iterable):\n",
+    "    total = 0\n",
+    "    for item in iterable:\n",
+    "        total += item\n",
+    "        yield total\n",
+    "\n",
+    "for sum_so_far in accumulate([1, 2, 3, 4, 5]): print(sum_so_far)"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-15T11:30:34.464585Z",
+     "start_time": "2023-10-15T11:30:34.452931Z"
+    }
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 3\n",
+    "\n",
+    "Napisz własny dekorator o nazwie hello. Wynikiem jego działania powinno być:\n",
+    "• wypisanie na ekranie napisu hello\n",
+    "• wywołanie funkcji przekazanej jako argument.\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "ffhbiOTJVnmB"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "hello\n",
+      "Hello, Bartek!\n"
+     ]
+    }
+   ],
+   "source": [
+    "def hello(func):\n",
+    "    def wrapper(*args, **kwargs):\n",
+    "        print(\"hello\")\n",
+    "        return func(*args, **kwargs)\n",
+    "\n",
+    "    return wrapper\n",
+    "\n",
+    "@hello\n",
+    "def greet(name):\n",
+    "    print(f\"Hello, {name}!\")\n",
+    "\n",
+    "greet(\"Bartek\")"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-15T11:24:58.805626Z",
+     "start_time": "2023-10-15T11:24:58.789995Z"
+    }
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 4\n",
+    "Zaimplementuj własną funkcję o nazwie tetranacci, zwracający określony element ciągu Tetranacciego.\n",
+    "Funkcja powinna posiadać parametr o nazwie n określający numer wyrazu ciągu do obliczenia.\n",
+    "Obliczenia wykonuj rekurencyjnie.\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "NjZRSS6sVrm5"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "56\n"
+     ]
+    }
+   ],
+   "source": [
+    "def tetranacci(n):\n",
+    "    if 0 <= n <= 2:\n",
+    "        return 0\n",
+    "    \n",
+    "    if n == 3:\n",
+    "        return 1\n",
+    "    \n",
+    "    return tetranacci(n - 1) + tetranacci(n - 2) + tetranacci(n - 3) + tetranacci(n - 4)\n",
+    "\n",
+    "print(f\"{tetranacci(10)}\")"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-15T11:32:55.860239Z",
+     "start_time": "2023-10-15T11:32:55.845346Z"
+    }
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## klasy"
+   ],
+   "metadata": {
+    "id": "eDFgAg3cWRAk"
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 5\n",
+    "Stwórz klasę Pojazd z atrybutami predkosc_max i przebieg\n",
+    "stwórz instancję klasy i wydrukuj jej atrybuty do konsoli\n",
+    "tworzac instancję możesz podać dowolne wielkości\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "LMrKGhhSWMM8"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Prędkość maksymalna: 100 km/h\n",
+      "Przebieg: 10000 km\n"
+     ]
+    }
+   ],
+   "source": [
+    "class Pojazd:\n",
+    "    def __init__(self, predkosc_max, przebieg):\n",
+    "        self.predkosc_max = predkosc_max\n",
+    "        self.przebieg = przebieg\n",
+    "\n",
+    "# Tworzenie instancji klasy Pojazd\n",
+    "moj_pojazd = Pojazd(predkosc_max=100, przebieg=10000)\n",
+    "\n",
+    "# Wydrukowanie atrybutów instancji\n",
+    "print(f\"Prędkość maksymalna: {moj_pojazd.predkosc_max} km/h\")\n",
+    "print(f\"Przebieg: {moj_pojazd.przebieg} km\")"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-15T11:35:31.593556Z",
+     "start_time": "2023-10-15T11:35:31.578163Z"
+    }
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 6\n",
+    "Stwórz klasę Autobus, która dziedziczy po Pojeździe utworzonym wcześniej,\n",
+    "ale do atrybutów Pojazdu dodaj jeszcze nazwę modelu\n",
+    "stwórz instancję klasy i wydrukuj jej atrybuty\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "z_dYT1f5Wexv"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Model: Mercedes\n",
+      "Prędkość maksymalna: 100 km/h\n",
+      "Przebieg: 10000 km\n"
+     ]
+    }
+   ],
+   "source": [
+    "class Autobus(Pojazd):\n",
+    "    def __init__(self, predkosc_max, przebieg, model):\n",
+    "        super().__init__(predkosc_max, przebieg)\n",
+    "        self.model = model\n",
+    "\n",
+    "autobus = Autobus(predkosc_max=100, przebieg=10000, model=\"Mercedes\")\n",
+    "\n",
+    "print(f\"Model: {autobus.model}\")\n",
+    "print(f\"Prędkość maksymalna: {autobus.predkosc_max} km/h\")\n",
+    "print(f\"Przebieg: {autobus.przebieg} km\")\n"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-15T11:35:41.977926Z",
+     "start_time": "2023-10-15T11:35:41.963731Z"
+    }
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 7\n",
+    "klasie Pojazd utwórz metodę liczba_miejsc, która będzie przyjmowała jako argument liczbę miejsc i wyświetlała komunikat:\n",
+    "\"{TU WSTAWIMY NAZWE POJAZDU} pomieści {LICZBA MIEJSC} osób.\"\n",
+    "Klasa Autobus ma też dziedziczyć tę metodę, ale dodatkowo przyjmować wartość domyślną dla liczby miejsc = 50\n",
+    "Utwórz instancję klasy aby zaprezentować działanie\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "CDj9cBQoWj-v"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Mercedes pomieści 50 osób.\n",
+      "Mercedes pomieści 20 osób.\n",
+      "BMW pomieści 2 osób.\n"
+     ]
+    }
+   ],
+   "source": [
+    "class Pojazd:\n",
+    "    def __init__(self, predkosc_max, przebieg, model):\n",
+    "        self.predkosc_max = predkosc_max\n",
+    "        self.przebieg = przebieg\n",
+    "        self.model = model\n",
+    "\n",
+    "    def liczba_miejsc(self, liczba_miejsc):\n",
+    "        print(f\"{self.model} pomieści {liczba_miejsc} osób.\")\n",
+    "\n",
+    "class Autobus(Pojazd):\n",
+    "    def __init__(self, predkosc_max, przebieg, model):\n",
+    "        super().__init__(predkosc_max, przebieg, model)\n",
+    "    \n",
+    "    def liczba_miejsc(self, liczba_miejsc=50):\n",
+    "        print(f\"{self.model} pomieści {liczba_miejsc} osób.\")\n",
+    "\n",
+    "autobus = Autobus(predkosc_max=80, przebieg=20000, model=\"Mercedes\")\n",
+    "pojazd = Pojazd(predkosc_max=200, przebieg=15000, model=\"BMW\")\n",
+    "\n",
+    "autobus.liczba_miejsc()  \n",
+    "autobus.liczba_miejsc(20)  \n",
+    "pojazd.liczba_miejsc(2)       "
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-15T11:44:15.296104Z",
+     "start_time": "2023-10-15T11:44:15.277383Z"
+    }
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 8\n",
+    "Sprawdź czy obiekt autobus jest instancją klasy Pojazd\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "y2s80EMmWrKP"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Obiekt 'autobus' jest instancją klasy 'Pojazd'.\n"
+     ]
+    }
+   ],
+   "source": [
+    "if isinstance(autobus, Pojazd):\n",
+    "    print(\"Obiekt autobus jest instancją klasy Pojazd\")\n",
+    "else:\n",
+    "    print(\"Obiekt autobus nie jest instancją klasy Pojazd\")"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-15T11:45:00.685178Z",
+     "start_time": "2023-10-15T11:45:00.647707Z"
+    }
+   }
+  },
+  {
+   "cell_type": "markdown",
+   "source": [
+    "## PRACA DOMOWA (15 pkt)"
+   ],
+   "metadata": {
+    "id": "jjNBmv7pVwP_"
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 1 (4 pkt)\n",
+    "Wykorzystując dekoratory, napisz cache dla funkcji tetranacci z poprzedniego zadania.\n",
+    "Ten dekorator powinien zapobiegać przed ponownym obliczaniem tych samych wartości.\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "TTUMq_uuVx32"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "outputs": [],
+   "source": [],
+   "metadata": {
+    "collapsed": false
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 2 (4 pkt)\n",
+    "Zaimplementuj własny generator o nazwie repeat, zwracający obiekt podany przez użytkownika dokładnie N razy.\n",
+    "Jeśli wartość parametru N nie została określona, generator powinien zwracać wartości w nieskończoność.\n",
+    "\n",
+    "PRZYKŁAD\n",
+    "repeat(10, 3) → 10 10 10\n",
+    "repeat(10, 5) → 10 10 10 10 10\n",
+    "repeat(5) → 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5…\n",
+    "repeat(5, None) → 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5…\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "Q_Ur2Z9uWF-l"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "repeat(10, 5): [10, 10, 10, 10, 10]\n"
+     ]
+    }
+   ],
+   "source": [
+    "def repeat(value, n=None):\n",
+    "    if n is None:\n",
+    "        while True:\n",
+    "            yield value\n",
+    "    else:\n",
+    "        for _ in range(n):\n",
+    "            yield value\n",
+    "test = repeat(10, 5)\n",
+    "print(\"repeat(10, 5):\", list(repeat(10, 5)))"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-28T09:27:31.163647Z",
+     "start_time": "2023-10-28T09:27:31.149443Z"
+    }
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 3 (1 pkt)\n",
+    "W kodzie z zajęć w klasie Pojazd utwórz atrybut, który niezależnie od utworzonego obiektu będzie miał taką samą wartość.\n",
+    "każdy obiekt ma mieć kolor biały\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "gChh80FsWzT7"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Kolor pojazdu 1: biały\n",
+      "Kolor pojazdu 2: biały\n",
+      "Kolor klasy Pojazd: biały\n"
+     ]
+    }
+   ],
+   "source": [
+    "class Pojazd:\n",
+    "    kolor = \"biały\"\n",
+    "\n",
+    "    def __init__(self, predkosc_max, przebieg, model):\n",
+    "        self.predkosc_max = predkosc_max\n",
+    "        self.przebieg = przebieg\n",
+    "        self.model = model\n",
+    "\n",
+    "pojazd1 = Pojazd(predkosc_max=200, przebieg=15000, model=\"Audi\")\n",
+    "pojazd2 = Pojazd(predkosc_max=200, przebieg=15000, model=\"BMW\")\n",
+    "\n",
+    "print(f\"Kolor pojazdu 1: {pojazd1.kolor}\")\n",
+    "print(f\"Kolor pojazdu 2: {pojazd2.kolor}\")\n",
+    "print(f\"Kolor klasy Pojazd: {Pojazd.kolor}\")"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-15T12:00:20.259620Z",
+     "start_time": "2023-10-15T12:00:20.235575Z"
+    }
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 4 (2 pkt)\n",
+    "Wykorzystaj klasy Autobus i Pojazd.\n",
+    "Zdefiniuj metodę opłata, k†óra będzie miała wartość domyślną liczba_miejsc * 100\n",
+    "Jeżeli Pojazd jest instancją Autobusu, opłata ma zostać powiększona o 10% wartości opłaty początkowej.\n",
+    "Np. jeżeli autobus domyślnie ma 50 miejsc to opłata całkowita wyniesie 5500\n",
+    "'''"
+   ],
+   "metadata": {
+    "id": "Q4Js_zjIXHZi"
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Opłata za autobus: 5500.0\n",
+      "Opłata za pojazd: 500\n"
+     ]
+    }
+   ],
+   "source": [
+    "class Pojazd:\n",
+    "    def __init__(self, predkosc_max, przebieg, model):\n",
+    "        self.predkosc_max = predkosc_max\n",
+    "        self.przebieg = przebieg\n",
+    "        self.model = model\n",
+    "\n",
+    "    def liczba_miejsc(self, liczba_miejsc):\n",
+    "        print(f\"{self.model} pomieści {liczba_miejsc} osób.\")\n",
+    "        \n",
+    "    def opłata(self, liczba_miejsc):\n",
+    "        return liczba_miejsc * 100\n",
+    "\n",
+    "class Autobus(Pojazd):\n",
+    "    def __init__(self, predkosc_max, przebieg, model):\n",
+    "        super().__init__(predkosc_max, przebieg, model)\n",
+    "    \n",
+    "    def liczba_miejsc(self, liczba_miejsc=50):\n",
+    "        print(f\"{self.model} pomieści {liczba_miejsc} osób.\")\n",
+    "    \n",
+    "    def opłata(self, liczba_miejsc=50):\n",
+    "        opłata_początkowa = super().opłata(liczba_miejsc) \n",
+    "        return opłata_początkowa + (0.1 * opłata_początkowa)\n",
+    "\n",
+    "autobus = Autobus(predkosc_max=80, przebieg=20000, model=\"Scania\")\n",
+    "pojzad = Pojazd(predkosc_max=200, przebieg=15000, model=\"Audi\")\n",
+    "\n",
+    "opłata_autobusu = autobus.opłata()\n",
+    "print(f\"Opłata za autobus: {opłata_autobusu}\")\n",
+    "\n",
+    "opłata_pojazdu = pojzad.opłata(5)\n",
+    "print(f\"Opłata za pojazd: {opłata_pojazdu}\")\n"
+   ],
+   "metadata": {
+    "collapsed": false,
+    "ExecuteTime": {
+     "end_time": "2023-10-28T09:23:56.394533Z",
+     "start_time": "2023-10-28T09:23:56.350847Z"
+    }
+   }
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "'''\n",
+    "Zadanie 5 (4 pkt)\n",
+    "Napisz klasę FunkcjaKwadratowa, która przechowuje funkcje typu $ax^2$+bx+c.\n",
+    "Klasa powinna zawierać trzy pola: a, b, c, które są przypisywane w konstruktorze.\n",
+    "Główną metodą powinna być rozwiaz(), która zwraca miejsca zerowe podanej funkcji.\n",
+    "Należy zwrócić uwagę na przypadki gdy a=0, b=0 lub c=0,\n",
+    "a także obmyślić sposób informowania o nieskończonej liczbie, jednym lub zerze rozwiązań.\n",
+    "'''\n",
+    "\n",
+    "'''\n",
+    "początek kodu dla ułatwienia\n",
+    "\n",
+    "'''\n",
+    "import math\n",
+    "\n",
+    "class FunkcjaKwadratowa:\n",
+    "    def __init__(self, a, b, c):\n",
+    "        self.a = a\n",
+    "        self.b = b\n",
+    "        self.c = c\n",
+    "\n",
+    "    def wypisz(self):\n",
+    "        ...\n",
+    "\n",
+    "    def oblicz_wartosc(self, x):\n",
+    "        ...\n",
+    "\n",
+    "    def rozwiaz(self):\n",
+    "        if self.a == 0:\n",
+    "            \n",
+    "        \n",
+    "        if self.a == 0:\n",
+    "            if self.b == 0:\n",
+    "                if self.c == 0:\n",
+    "                    return \"Nieskończona liczba rozwiązań\"\n",
+    "                else:\n",
+    "                    return \"Brak rozwiązań\"\n",
+    "            else:\n",
+    "                x1 = -self.c / self.b\n",
+    "                return \"Jedno rozwiązanie: x = {:.2f}\".format(x1)\n",
+    "        else:\n",
+    "            delta = self.b ** 2 - 4 * self.a * self.c\n",
+    "            if delta > 0:\n",
+    "                x1 = (-self.b - (delta ** 0.5)) / (2 * self.a)\n",
+    "                x2 = (-self.b + (delta ** 0.5)) / (2 * self.a)\n",
+    "                return \"Dwa rozwiązania: x1 = {:.2f}, x2 = {:.2f}\".format(x1, x2)\n",
+    "            elif delta == 0:\n",
+    "                x1 = -self.b / (2 * self.a)\n",
+    "                return \"Jedno rozwiązanie: x = {:.2f}\".format(x1)\n",
+    "            else:\n",
+    "                return \"Brak rzeczywistych rozwiązań\"\n",
+    "\n",
+    "def main():\n",
+    "    f1 = FunkcjaKwadratowa(2, 3, 1)\n",
+    "    f1.wypisz()\n",
+    "    print(f1.oblicz_wartosc(0))\n",
+    "    print(f1.oblicz_wartosc(1))\n",
+    "\n",
+    "    print(FunkcjaKwadratowa(0, 0, 0).rozwiaz())\n",
+    "    print(FunkcjaKwadratowa(0, 0, 1).rozwiaz())\n",
+    "    print(FunkcjaKwadratowa(0, 2, 3).rozwiaz())\n",
+    "    print(FunkcjaKwadratowa(1, 2, 3).rozwiaz())\n",
+    "    print(FunkcjaKwadratowa(1, -5, 6).rozwiaz())\n",
+    "    print(FunkcjaKwadratowa(1, 4, 4).rozwiaz())\n",
+    "\n",
+    "if __name__ == \"__main__\":\n",
+    "    main()"
+   ],
+   "metadata": {
+    "id": "BsdImsIAXXsu"
+   },
+   "execution_count": null,
+   "outputs": []
+  }
+ ]
+}
